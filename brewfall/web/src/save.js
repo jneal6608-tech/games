@@ -54,7 +54,8 @@ export function save(now) {
   if (!now) { if (!saveTimer) saveTimer = setTimeout(() => { saveTimer = 0; save(true); }, 400); return; }
   try {
     const d = JSON.stringify(profile.p), raw = JSON.stringify({ d, h: hashStr(d + SALT) });
-    const prev = ls.get(KEY); if (prev && (n++ % 5 === 0)) ls.set(BAK, prev);
+    // Rotate into the backup slot only a save that still decodes, so a corrupted main copy never replaces a good backup.
+    const prev = ls.get(KEY); if (prev && (n++ % 5 === 0) && decode(prev)) ls.set(BAK, prev);
     if (!ls.set(KEY, raw)) console.warn('save failed (storage full?)');
     if (n % 3 === 1) native.saveBackup(raw);
   } catch (e) { console.warn('save error', e); }

@@ -3,6 +3,7 @@ import { World, W, H, RADII, LINE_Y, DROP_Y } from './physics.js';
 import * as D from './data.js';
 import { sfx } from './audio.js';
 import { native } from './platform.js';
+const REDUCE_MOTION = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches; // no screen shake
 
 const PAD = 8, CW = W + PAD * 2, CH = H + PAD * 2;
 const shade = (hex, k) => { const n = parseInt(hex.slice(1), 16); let r = n >> 16, g = (n >> 8) & 255, b = n & 255; const f = k < 0 ? 0 : 255, a = Math.abs(k); r = Math.round(r + (f - r) * a); g = Math.round(g + (f - g) * a); b = Math.round(b + (f - b) * a); return `rgb(${r},${g},${b})`; };
@@ -114,7 +115,7 @@ export class Board {
   draw() {
     const g = this.g, k = this.k, run = this.run, th = this.theme; if (!k) return;
     g.setTransform(k, 0, 0, k, 0, 0); g.clearRect(0, 0, CW, CH);
-    const sx = this.shakeT > 0 ? (Math.random() - 0.5) * 8 * this.shakeT * 3 : 0;
+    const sx = this.shakeT > 0 && !REDUCE_MOTION ? (Math.random() - 0.5) * 8 * this.shakeT * 3 : 0;
     g.save(); g.translate(PAD + sx, PAD);
     // cauldron body
     const bg = g.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, th.bg[0]); bg.addColorStop(1, th.bg[1]);

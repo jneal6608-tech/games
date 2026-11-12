@@ -102,3 +102,5 @@ svg.i{width:1em;height:1em;vertical-align:-.14em;fill:currentColor;flex:none}
 @media (max-height:640px){.logo b{font-size:44px}.btn.big{min-height:52px;font-size:19px}.charm{width:44px;height:44px;font-size:22px}.tray{min-height:54px;padding:4px 10px}.scoreline .sc{font-size:24px}}
 
 .btn.two{flex-direction:column;gap:1px;line-height:1.2}.btn.two small{font-weight:700;opacity:.8;font-size:12.5px}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
