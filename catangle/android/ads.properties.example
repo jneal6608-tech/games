@@ -1,0 +1,4 @@
+# Real AdMob ids (from https://admob.google.com). Without this file the build uses Google's test ids.
+appId=ca-app-pub-XXXXXXXXXXXXXXXX~XXXXXXXXXX
+rewarded=ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX
+interstitial=ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX

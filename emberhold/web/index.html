@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#07060b">
+<title>Emberhold: Idle Defense</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="cv" aria-hidden="true"></canvas>
+
+<div id="app" class="booting">
+  <header id="topbar">
+    <button class="pill" data-act="nav" data-to="workshop" aria-label="Embers, permanent currency"><span class="ic ember">🔥</span><b id="tEmbers">0</b></button>
+    <button class="pill" data-act="nav" data-to="shop" aria-label="Gems, premium currency"><span class="ic gem">◈</span><b id="tGems">0</b><span class="plus">+</span></button>
+    <span class="grow"></span>
+    <button class="iconbtn" data-act="settings" aria-label="Settings">⚙</button>
+  </header>
+
+  <main id="screens">
+    <section id="home" class="screen" aria-label="Home"></section>
+    <section id="workshop" class="screen scroll" aria-label="Workshop"></section>
+    <section id="flames" class="screen scroll" aria-label="Flames"></section>
+    <section id="quests" class="screen scroll" aria-label="Quests"></section>
+    <section id="shop" class="screen scroll" aria-label="Shop"></section>
+  </main>
+
+  <nav id="nav" aria-label="Main">
+    <button data-act="nav" data-to="workshop"><i>⚒</i><span>Workshop</span><em class="dot"></em></button>
+    <button data-act="nav" data-to="flames"><i>♨</i><span>Flames</span><em class="dot"></em></button>
+    <button data-act="nav" data-to="home"><i>⌂</i><span>Hold</span><em class="dot"></em></button>
+    <button data-act="nav" data-to="quests"><i>✔</i><span>Quests</span><em class="dot"></em></button>
+    <button data-act="nav" data-to="shop"><i>◈</i><span>Shop</span><em class="dot"></em></button>
+  </nav>
+
+  <section id="run" class="hidden" aria-label="Run">
+    <div id="hud">
+      <div class="hudrow">
+        <div class="wavebox"><small id="hTier">Dusk</small><b id="hWave">Wave 1</b></div>
+        <div class="hudmid">
+          <div class="bar hp" role="progressbar" aria-label="Ember health"><i id="hHpBar"></i><span id="hHp">20 / 20</span></div>
+          <div class="bar wv"><i id="hWaveBar"></i></div>
+        </div>
+        <button class="iconbtn" id="hSpeed" data-act="speed" aria-label="Game speed">1×</button>
+        <button class="iconbtn" data-act="pause" aria-label="Pause">❚❚</button>
+      </div>
+      <div class="hudrow cur">
+        <span class="chip"><span class="ic cinder">◆</span><b id="hCinders">0</b></span>
+        <span class="chip"><span class="ic ember">🔥</span><b id="hEmbers">0</b></span>
+        <span class="chip" id="hBoons" data-act="boons" role="button" tabindex="0" aria-label="Boons this run">✧ <b id="hBoonN">0</b></span>
+      </div>
+    </div>
+    <div id="playfield">
+      <div id="banner" aria-live="polite"></div>
+      <div id="abilities"></div>
+    </div>
+    <div id="panel">
+      <div id="ptabs" role="tablist">
+        <button data-act="ptab" data-tab="attack" class="on">Attack</button>
+        <button data-act="ptab" data-tab="defense">Defense</button>
+        <button data-act="ptab" data-tab="utility">Utility</button>
+        <button data-act="mult" id="pMult" aria-label="Buy amount">×1</button>
+      </div>
+      <div id="plist" class="scroll"></div>
+    </div>
+  </section>
+
+  <div id="coach" class="hidden" role="status"></div>
+  <div id="modals"></div>
+  <div id="toasts" aria-live="polite"></div>
+</div>
+
+<div id="splash"><div class="logo"><span>EMBER</span><span>HOLD</span></div><p>kindling…</p></div>
+
+<script src="js/data.js"></script>
+<script src="js/save.js"></script>
+<script src="js/platform.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/sim.js"></script>
+<script src="js/render.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

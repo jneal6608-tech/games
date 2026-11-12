@@ -1,0 +1,42 @@
+<!doctype html><meta charset="utf-8">
+<style>@font-face{font-family:Fredoka;src:url('../web/fonts/Fredoka.woff2');font-weight:300 700}html,body{margin:0;background:transparent}canvas{display:block}</style>
+<canvas id="c"></canvas>
+<script type="module">
+import { drawCat, drawBackground } from '../web/js/render.js';
+import { COATS, THEMES } from '../web/js/data.js';
+const coat = (id) => COATS.find((c) => c.id === id);
+const q = new URLSearchParams(location.search);
+const kind = q.get('kind'), S = Number(q.get('size') || 512);
+const cv = document.getElementById('c'); const ctx = cv.getContext('2d');
+await document.fonts.load('700 40px Fredoka');
+function curl(cx, cy, u, c, mood = 'happy') {
+  const pts = [[1.45, 1.35], [-0.75, 1.35], [-0.75, -0.55], [0.75, -0.55]].map(([x, y]) => [cx + x * u * 0.62, cy + y * u * 0.62]);
+  drawCat(ctx, pts, u, c, { t: 1.3, seed: 2, mood });
+}
+if (kind === 'fg') { cv.width = cv.height = S; curl(S * 0.5, S * 0.47, S * 0.3, coat('ginger')); }
+else if (kind === 'icon') {
+  cv.width = cv.height = S;
+  const g = ctx.createLinearGradient(0, 0, 0, S); g.addColorStop(0, '#FFD3A6'); g.addColorStop(1, '#FF9E7A');
+  ctx.fillStyle = g;
+  if (q.get('round')) { ctx.beginPath(); ctx.arc(S / 2, S / 2, S / 2, 0, 7); ctx.fill(); } else ctx.fillRect(0, 0, S, S);
+  curl(S * 0.5, S * 0.47, S * (q.get('round') ? 0.34 : 0.4), coat('ginger'));
+} else if (kind === 'feature') {
+  cv.width = 1024; cv.height = 500;
+  drawBackground(ctx, 1024, 500, THEMES[0], 3);
+  const rows = [['smoke', 90, 5.2, 1], ['midnight', 200, 3.4, -1], ['mint', 310, 4.4, 1], ['cloud', 420, 3.0, -1]];
+  for (const [id, y, len, dir] of rows) {
+    const u = 78, x0 = dir > 0 ? 610 : 1000;
+    const pts = dir > 0 ? [[x0, y], [x0 + len * u, y]] : [[x0, y], [x0 - len * u, y]];
+    drawCat(ctx, pts, u, coat(id), { t: 1.3, seed: y, mood: 'happy' });
+  }
+  ctx.save(); ctx.translate(300, 215); ctx.textAlign = 'center'; ctx.lineJoin = 'round';
+  ctx.font = '700 128px Fredoka';
+  const wCat = ctx.measureText('Cat').width, wAll = ctx.measureText('Catangle').width;
+  ctx.textAlign = 'left'; ctx.lineWidth = 22; ctx.strokeStyle = '#fff'; ctx.strokeText('Catangle', -wAll / 2, 0);
+  ctx.fillStyle = '#FF7A59'; ctx.fillText('Cat', -wAll / 2, 0); ctx.fillStyle = '#5A3526'; ctx.fillText('angle', -wAll / 2 + wCat, 0);
+  ctx.font = '600 38px Fredoka'; ctx.textAlign = 'center'; ctx.fillStyle = 'rgba(90,53,38,.75)';
+  ctx.fillText('Untangle the cats.', 0, 70); ctx.fillText('Send them home.', 0, 116);
+  ctx.restore();
+}
+document.title = 'ready';
+</script>

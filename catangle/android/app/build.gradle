@@ -1,0 +1,64 @@
+plugins { id 'com.android.application' }
+
+// Release signing: copy keystore.properties.example to keystore.properties (never commit it).
+def ksFile = rootProject.file('keystore.properties')
+def ks = new Properties()
+if (ksFile.exists()) ksFile.withInputStream { ks.load(it) }
+
+// Ad unit ids. The defaults are Google's public TEST ids: they show test ads and earn nothing.
+// Put real ids in android/ads.properties before a production release (see NEXT_STEPS.md).
+def adsFile = rootProject.file('ads.properties')
+def ads = new Properties()
+if (adsFile.exists()) adsFile.withInputStream { ads.load(it) }
+def admobAppId = ads.getProperty('appId', 'ca-app-pub-3940256099942544~3347511713')
+def rewardedId = ads.getProperty('rewarded', 'ca-app-pub-3940256099942544/5224354917')
+def interstitialId = ads.getProperty('interstitial', 'ca-app-pub-3940256099942544/1033173712')
+
+android {
+    namespace 'com.catangle.game'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId 'com.catangle.game'
+        minSdk 24
+        targetSdk 36
+        versionCode 1
+        versionName '1.0.0'
+        manifestPlaceholders = [admobAppId: admobAppId]
+        buildConfigField 'String', 'AD_REWARDED', "\"${rewardedId}\""
+        buildConfigField 'String', 'AD_INTERSTITIAL', "\"${interstitialId}\""
+    }
+    buildFeatures { buildConfig true }
+    sourceSets { main { assets.srcDirs = ['../../web'] } }
+
+    signingConfigs {
+        release {
+            if (ksFile.exists()) {
+                storeFile rootProject.file(ks['storeFile'])
+                storePassword ks['storePassword']
+                keyAlias ks['keyAlias']
+                keyPassword ks['keyPassword']
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (ksFile.exists()) signingConfig signingConfigs.release
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    lint { abortOnError false }
+}
+
+dependencies {
+    implementation 'androidx.webkit:webkit:1.14.0'
+    implementation 'com.google.android.gms:play-services-ads:24.9.0'
+    implementation 'com.google.android.ump:user-messaging-platform:3.2.0'
+    implementation 'com.android.billingclient:billing:8.3.0'
+}

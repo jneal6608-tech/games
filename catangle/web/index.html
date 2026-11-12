@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#FFE9CF">
+<title>Catangle</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="cv"></canvas>
+
+<section id="home" class="screen">
+  <header class="topbar">
+    <button class="icon-btn" id="btn-settings" aria-label="Settings"><svg><use href="#i-gear"/></svg></button>
+    <span class="spacer"></span>
+    <button class="pill" id="home-fish" aria-label="Fish"><svg><use href="#i-fish"/></svg><b data-fish>0</b><i>+</i></button>
+  </header>
+  <div class="logo">
+    <h1><span>Cat</span><span>angle</span></h1>
+    <p>Untangle the cats. Send them home.</p>
+  </div>
+  <div class="home-main">
+    <div class="chapter" id="chapter">
+      <div class="chapter-row"><span id="chapter-name">Chapter 1</span><span id="chapter-count">0/10</span></div>
+      <div class="bar"><i id="chapter-bar"></i><svg class="chest"><use href="#i-chest"/></svg></div>
+    </div>
+    <button class="btn big primary" id="btn-play"><svg><use href="#i-play"/></svg><span id="play-label">Level 1</span></button>
+    <button class="btn daily" id="btn-daily"><svg><use href="#i-cal"/></svg><span><b>Daily Tangle</b><small id="daily-sub">New puzzle every day</small></span><em id="daily-streak"></em></button>
+    <div class="row">
+      <button class="btn tile" id="btn-cats"><svg><use href="#i-cat"/></svg><span>Cats</span><em id="cats-count"></em></button>
+      <button class="btn tile" id="btn-shop"><svg><use href="#i-cart"/></svg><span>Shop</span></button>
+    </div>
+  </div>
+</section>
+
+<section id="game" class="screen hidden">
+  <header class="topbar">
+    <button class="icon-btn" id="btn-home" aria-label="Home"><svg><use href="#i-home"/></svg></button>
+    <div class="title"><b id="g-title">Level 1</b><div class="hearts" id="g-hearts"></div></div>
+    <button class="pill" id="game-fish" aria-label="Fish"><svg><use href="#i-fish"/></svg><b data-fish>0</b></button>
+  </header>
+  <div class="coach hidden" id="coach"></div>
+  <div id="stage"></div>
+  <div class="left" id="g-left"></div>
+  <footer class="tools">
+    <button class="tool" id="btn-hint"><svg><use href="#i-bulb"/></svg><span>Hint</span><em id="hint-n">3</em></button>
+    <button class="tool" id="btn-lure"><svg><use href="#i-treat"/></svg><span>Treat</span><em id="lure-n">1</em></button>
+    <button class="tool" id="btn-restart"><svg><use href="#i-restart"/></svg><span>Restart</span></button>
+  </footer>
+</section>
+
+<div id="modal-root"></div>
+<div id="toast"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 21s-8-5.3-8-11a4.6 4.6 0 0 1 8-3 4.6 4.6 0 0 1 8 3c0 5.700-8 11-8 11z" fill="currentColor"/></symbol>
+  <symbol id="i-fish" viewBox="0 0 24 24"><path d="M2 12c3-5 8-6 12-4 2 1 3.500 2.500 4 4l4-3v6l-4-3c-.5 1.500-2 3-4 4-4 2-9 1-12-4z" fill="currentColor"/><circle cx="7.500" cy="11" r="1.200" fill="#fff"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-4 12.700V17h8v-2.300A7 7 0 0 0 12 2zM9 19h6v1.500a1.500 1.500 0 0 1-1.500 1.500h-3A1.500 1.500 0 0 1 9 20.500z" fill="currentColor"/></symbol>
+  <symbol id="i-treat" viewBox="0 0 24 24"><path d="M7 3a3 3 0 0 1 3 3l4 4h0a3 3 0 1 1 3 5 3 3 0 1 1-5 3l-4-4a3 3 0 1 1-3-5 3 3 0 0 1 2-6z" fill="currentColor"/></symbol>
+  <symbol id="i-restart" viewBox="0 0 24 24"><path d="M12 4V1L7 5.500 12 10V7a5 5 0 1 1-5 5H4a8 8 0 1 0 8-8z" fill="currentColor"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M12 3 2 12h3v8h5v-5h4v5h5v-8h3z" fill="currentColor"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><path d="M19.400 13a7.600 7.600 0 0 0 0-2l2-1.600-2-3.400-2.400 1a7.600 7.600 0 0 0-1.700-1L15 3.500h-4l-.4 2.500a7.600 7.600 0 0 0-1.700 1l-2.400-1-2 3.400 2 1.600a7.600 7.600 0 0 0 0 2l-2 1.600 2 3.400 2.400-1a7.600 7.600 0 0 0 1.700 1l.4 2.500h4l.4-2.500a7.600 7.600 0 0 0 1.700-1l2.400 1 2-3.400zM13 15.200a3.200 3.200 0 1 1 0-6.400 3.200 3.200 0 0 1 0 6.400z" fill="currentColor" transform="translate(-1 0)"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.500v15a1 1 0 0 0 1.500.9l12-7.500a1 1 0 0 0 0-1.800l-12-7.500A1 1 0 0 0 7 4.500z" fill="currentColor"/></symbol>
+  <symbol id="i-video" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="3.500" fill="currentColor"/><path d="M10 9v6l5-3z" fill="#fff"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><path d="M7 2v2H4a1 1 0 0 0-1 1v15a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-3V2h-2v2H9V2zm-2 8h14v9H5z" fill="currentColor"/><path d="m8.500 14.500 2.300 2.300 4.700-4.700" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></symbol>
+  <symbol id="i-cat" viewBox="0 0 24 24"><path d="M4 3l4 4a9 9 0 0 1 8 0l4-4v9a8 8 0 0 1-16 0z" fill="currentColor"/><circle cx="9" cy="12" r="1.300" fill="#fff"/><circle cx="15" cy="12" r="1.300" fill="#fff"/></symbol>
+  <symbol id="i-cart" viewBox="0 0 24 24"><path d="M3 3h3l2.500 11h10L21 7H8" stroke="currentColor" stroke-width="2.400" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9.500" cy="19" r="1.800" fill="currentColor"/><circle cx="17.500" cy="19" r="1.800" fill="currentColor"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><path d="M7 10V7a5 5 0 0 1 10 0v3h1a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1zm2 0h6V7a3 3 0 0 0-6 0z" fill="currentColor"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m4 12.500 5 5L20 6.500" stroke="currentColor" stroke-width="3.400" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="3.200" stroke-linecap="round"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 2 3 6.500 7 .9-5.200 4.800 1.400 7L12 17.700 5.800 21.200l1.400-7L2 9.400l7-.9z" fill="currentColor"/></symbol>
+  <symbol id="i-chest" viewBox="0 0 24 24"><path d="M3 10a5 5 0 0 1 5-5h8a5 5 0 0 1 5 5v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" fill="#C9792B"/><path d="M3 11h18v2.500H3z" fill="#7A4313"/><rect x="10" y="10" width="4" height="5" rx="1" fill="#FFD76A"/></symbol>
+</svg>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

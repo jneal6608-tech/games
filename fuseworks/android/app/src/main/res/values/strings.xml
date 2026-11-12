@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Fuseworks</string>
+    <string name="title_activity_main">Fuseworks</string>
+    <string name="package_name">com.fuseworks.game</string>
+    <string name="custom_url_scheme">com.fuseworks.game</string>
+    <!-- AdMob APP ID. This is Google's public TEST app ID. Replace with your own (ca-app-pub-XXXXXXXXXXXXXXXX~YYYYYYYYYY)
+         from the AdMob console before releasing. See docs/PUBLISHING.md. -->
+    <string name="admob_app_id">ca-app-pub-3940256099942544~3347511713</string>
+</resources>
