@@ -14,6 +14,7 @@ import android.os.Vibrator;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.webkit.JavascriptInterface;
+import android.webkit.RenderProcessGoneDetail;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
@@ -87,6 +88,17 @@ public class MainActivity extends Activity {
                 Uri u = request.getUrl();
                 if (HOST.equals(u.getHost())) return false;
                 openExternal(u.toString()); // the game page never navigates away, so the bridge stays private
+                return true;
+            }
+
+            @Override
+            @android.annotation.TargetApi(26)
+            public boolean onRenderProcessGone(WebView view, RenderProcessGoneDetail detail) {
+                // The WebView renderer died (usually low memory). Start a fresh screen instead of letting the app crash;
+                // all progress lives in the save, which is written on every change and on pause. A fresh start (not
+                // recreate()) avoids saving the dead WebView's state.
+                startActivity(new Intent(MainActivity.this, MainActivity.class));
+                finish();
                 return true;
             }
         });

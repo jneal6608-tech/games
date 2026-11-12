@@ -21,6 +21,7 @@ let view = null;
 let prices = {};
 const modals = [];
 const coatById = Object.fromEntries(COATS.map((c) => [c.id, c]));
+const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const theme = () => THEMES.find((t) => t.id === save.theme) || THEMES[0];
 setSound(save.settings.sound);
 
@@ -106,10 +107,11 @@ function dailyReward(streak) { return ECON.dailyReward + Math.min(ECON.streakBon
 // ------------------------------------------------------------------ level setup
 function startGame(mode, opts = {}) {
   const n = opts.level || save.level;
-  const def = mode === 'daily' ? generateDaily(today()) : generateLevel(n);
+  const day = today();
+  const def = mode === 'daily' ? generateDaily(day) : generateLevel(n);
   const state = new LevelState(def);
   view = {
-    mode, n, def, state, L: null,
+    mode, n, def, state, L: null, day,
     spines: new Map(), coats: new Map(), anims: new Map(), shakes: new Map(),
     ghosts: [], particles: [], hintId: null, lureMode: false, ended: false,
     usedContinue: false, combo: 0, comboAt: 0, shakeUntil: 0, auto: false, startedAt: Date.now(),
@@ -271,7 +273,7 @@ function burst(x, y, n, kind) {
   }
 }
 function confetti() {
-  for (let i = 0; i < 90; i++) {
+  for (let i = 0; i < (reduceMotion ? 24 : 90); i++) {
     view.particles.push({ kind: 'confetti', x: Math.random() * W, y: -20 - Math.random() * 200, vx: (Math.random() - 0.5) * 80, vy: 180 + Math.random() * 260, life: 0, max: 2.6, size: 6 + Math.random() * 7, rot: Math.random() * 6, vr: (Math.random() - 0.5) * 12, color: ['#F2506E', '#FFC23D', '#4CC38A', '#5AA9F0', '#B9A2F2', '#FF7A59'][i % 6] });
   }
 }
@@ -320,7 +322,7 @@ function drawGame(dt) {
   const { state: st, L } = view;
   const u = L.u, th = theme();
   ctx.save();
-  if (view.shakeUntil > time) ctx.translate((Math.random() - 0.5) * u * 0.12, (Math.random() - 0.5) * u * 0.12);
+  if (view.shakeUntil > time && !reduceMotion) ctx.translate((Math.random() - 0.5) * u * 0.12, (Math.random() - 0.5) * u * 0.12);
   drawBoard(ctx, L, st, th);
   const badges = [];
   for (const cat of st.cats.values()) {
@@ -457,14 +459,16 @@ function coatPreview(cv, coat, mood = 'happy') {
 
 function onWin() {
   const v = view, st = v.state;
+  // Clip mode is an auto-player for recording videos: it must never award fish, stars or level progress.
+  if (v.auto) { clipEnd(); return; }
   const stars = Math.max(1, Math.min(3, st.hearts));
   const notes = [];
   let fish = 0, title = ['Phew!', 'Nice one!', 'Purr-fect!'][stars - 1];
   save.stats.wins++; if (stars === 3) save.stats.perfect++;
   save.ads.winsSince++;
   if (v.mode === 'daily') {
-    const t = today();
-    if (save.daily.lastDay !== t) {
+    const t = v.day; // the puzzle's own day, so a solve that crosses midnight is credited correctly
+    if (save.daily.lastDay < t) {
       save.daily.streak = save.daily.lastDay === t - 1 ? save.daily.streak + 1 : 1;
       save.daily.bestStreak = Math.max(save.daily.bestStreak, save.daily.streak);
       save.daily.lastDay = t;
@@ -488,7 +492,6 @@ function onWin() {
   }
   save.fish += fish;
   persist(save, true);
-  if (v.auto) { clipEnd(); return; }
   const m = modal(`
     <h2>${title}</h2>
     <div class="stars">${[0, 1, 2].map((i) => `<svg class="${i < stars ? 'on' : ''}" style="animation-delay:${0.15 + i * 0.22}s"><use href="#i-star"/></svg>`).join('')}</div>
@@ -527,7 +530,7 @@ async function maybeInterstitial() {
 
 function onLose() {
   const v = view, st = v.state;
-  if (v.auto) { restart(); return; }
+  if (v.auto) { startClip({ level: v.n, daily: v.mode === 'daily' }); return; }
   const fuse = st.lostReason === 'fuse';
   const m = modal(`
     <h2>${fuse ? 'Too slow!' : 'Out of hearts!'}</h2>
@@ -554,6 +557,7 @@ function restart() { if (view) startGame(view.mode, { level: view.n, clip: view.
 function useHint() {
   if (!view || view.state.status !== 'play') return;
   if (view.hintId !== null) return;
+  if (view.state.bestMove() === null) { toast('No cat can move yet. Try a treat!'); return; }
   const go = () => { view.hintId = view.state.bestMove(); Sfx.hint(); refreshHud(); };
   if (save.hints > 0) { save.hints--; persist(save); go(); return; }
   const m = modal(`
@@ -777,7 +781,7 @@ window.__catangle = {
   best: () => (view ? view.state.bestMove() : null),
   blocked: () => { if (!view) return null; const st = view.state; const c = [...st.cats.values()].find((k) => st.isAwake(k) && st.ray(k).blocker >= 0); return c ? c.id : null; },
   point: (id) => { const c = view.state.cats.get(id); const p = px(c.cells[Math.min(1, c.cells.length - 1)]); return { x: p[0], y: p[1] }; },
-  setSave: (patch) => { Object.assign(save, patch); persist(save, true); refreshHome(); },
+  setSave: (patch) => { Object.assign(save, patch); persist(save, true); applyTheme(); refreshHome(); },
   startClip,
 };
 

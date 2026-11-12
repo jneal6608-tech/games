@@ -81,10 +81,13 @@ export function drawCat(ctx, pts, u, coat, opts = {}) {
       ctx.strokeStyle = coat.stripe; ctx.setLineDash([u * 0.1, u * 0.24]); ctx.lineDashOffset = -u * 0.1;
       strokePath(ctx, pts);
     } else {
-      ctx.strokeStyle = coat.stripe; ctx.setLineDash([u * 0.42, u * 0.86]); ctx.lineDashOffset = -u * 0.3;
+      // Soft rounded patches that sit inside the body outline (butt-capped full-width dashes read as glitchy blocks).
+      ctx.lineCap = 'round'; ctx.lineWidth = bw * 0.74;
+      ctx.strokeStyle = coat.stripe; ctx.setLineDash([u * 0.16, u * 1.12]); ctx.lineDashOffset = -u * 0.45;
       strokePath(ctx, pts);
       if (coat.pattern === 'patch2') {
-        ctx.strokeStyle = coat.stripe2; ctx.setLineDash([u * 0.3, u * 0.98]); ctx.lineDashOffset = -u * 0.95;
+        ctx.lineWidth = bw * 0.6;
+        ctx.strokeStyle = coat.stripe2; ctx.setLineDash([u * 0.08, u * 1.2]); ctx.lineDashOffset = -u * 1.05;
         strokePath(ctx, pts);
       }
     }

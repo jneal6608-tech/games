@@ -56,8 +56,8 @@ export function persist(s, immediate) {
   const write = () => {
     timer = null;
     try {
-      const prev = localStorage.getItem(KEY);
-      if (prev) localStorage.setItem(BAK, prev);
+      // Only rotate a readable save into the backup slot, so a corrupt main copy can never overwrite a good backup.
+      if (read(KEY)) localStorage.setItem(BAK, localStorage.getItem(KEY));
       localStorage.setItem(KEY, JSON.stringify(s));
     } catch (e) { /* storage full or blocked: keep playing in memory */ }
   };

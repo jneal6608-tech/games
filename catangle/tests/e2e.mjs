@@ -138,6 +138,16 @@ assert.equal(await G(() => window.__catangle.save.settings.sound), false);
 await click('.modal [data-act=reset]'); await click('.modal [data-act=yes]'); await p.waitForTimeout(300);
 assert.equal(await G(() => window.__catangle.save.level), 1);
 
+// 8b. Clip mode auto-solves a level but must never award fish or level progress.
+{
+  await G(() => window.__catangle.setSave({ level: 5, fish: 100, seen: { sleepy: 1, grumpy: 1 } }));
+  await G(() => window.__catangle.startClip({ level: 5 }));
+  await p.waitForFunction(() => document.querySelector('.endcard'), null, { timeout: 60000 });
+  const s = await G(() => ({ level: window.__catangle.save.level, fish: window.__catangle.save.fish }));
+  assert.deepEqual(s, { level: 5, fish: 100 }, 'clip mode gave no rewards');
+  await click('.endcard'); await p.waitForTimeout(200);
+}
+
 // 9. Small and large screens lay out without overflow.
 for (const [w, h] of [[320, 568], [412, 915], [800, 1280]]) {
   await p.setViewportSize({ width: w, height: h }); await p.waitForTimeout(200);

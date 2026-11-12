@@ -7,6 +7,9 @@ const listeners = new Map();
 let seq = 1;
 const params = new URLSearchParams(location.search);
 const DEV = params.has('dev');
+// Simulated ads exist only for development and automated tests (dev flag, fastads flag or a local server).
+// A public browser build without the native bridge reports ads as unavailable instead of granting free rewards.
+const MOCK_ADS = DEV || params.has('fastads') || /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
 
 window.__nativeResult = (id, json) => {
   const done = pending.get(id);
@@ -50,12 +53,12 @@ export const Platform = {
   // → 'granted' | 'dismissed' | 'unavailable'
   async rewarded(placement) {
     if (bridge) { const r = await call('rewarded', { placement }); return r.result || 'unavailable'; }
-    if (params.get('ads') === 'none') return 'unavailable';
+    if (params.get('ads') === 'none' || !MOCK_ADS) return 'unavailable';
     await mockAd('Rewarded video'); return 'granted';
   },
   async interstitial() {
     if (bridge) { await call('interstitial', {}, 60000); return; }
-    if (params.get('ads') === 'none') return;
+    if (params.get('ads') === 'none' || !MOCK_ADS) return;
     await mockAd('Interstitial');
   },
   // → { ok, reason?, token? }
