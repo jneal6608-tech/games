@@ -14,7 +14,8 @@
     "android:sync": "npm run build && cap sync android",
     "android:debug": "npm run android:sync && cd android && ./gradlew assembleDebug",
     "android:release": "npm run android:sync && cd android && ./gradlew bundleRelease assembleRelease",
-    "e2e:touch": "node e2e/touch.mjs"
+    "e2e:touch": "node e2e/touch.mjs",
+    "e2e:integrity": "node e2e/integrity.mjs"
   },
   "dependencies": {
     "@capacitor-community/admob": "^8.3.0",

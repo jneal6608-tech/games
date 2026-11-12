@@ -123,10 +123,16 @@ export type PurchaseResult = 'purchased' | 'cancelled' | 'pending' | 'unavailabl
 export interface PurchaseOutcome { result: PurchaseResult; token?: string }
 type WebPurchaseHandler = (what: string) => Promise<'purchased' | 'cancelled'>;
 let webPurchaseHandler: WebPurchaseHandler | null = null;
+/**
+ * Simulated purchases exist only for development and the automated tests (local server or ?dev=1). A browser build
+ * hosted anywhere else reports the store as unavailable, so a public web preview can never hand out paid content.
+ */
+const SIMULATED_STORE = typeof location !== 'undefined'
+  && (/^(localhost|127\.0\.0\.1)$/.test(location.hostname) || /[?&]dev=1/.test(location.search));
 
 async function buy(productId: string, label: string, isConsumable: boolean): Promise<PurchaseOutcome> {
   if (!isNative) {
-    if (!webPurchaseHandler) return { result: 'unavailable' };
+    if (!webPurchaseHandler || !SIMULATED_STORE) return { result: 'unavailable' };
     const r = await webPurchaseHandler(label);
     return r === 'purchased' ? { result: r, token: `web-${Date.now()}-${Math.random().toString(36).slice(2)}` } : { result: r };
   }

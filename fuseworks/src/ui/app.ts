@@ -22,6 +22,8 @@ interface Ended { run: RunState; reward: RunReward; doubled: boolean; achievemen
 
 const K_META = 'fuseworks.meta.v1';
 const K_RUN = 'fuseworks.run.v1';
+/** Second copy of the progression save: if the main copy is ever unreadable, progress comes back from here. */
+const K_META_BAK = 'fuseworks.meta.v1.bak';
 const DRAG_LIFT = 46; // px the dragged shell floats above the finger
 
 export class App {
@@ -55,7 +57,10 @@ export class App {
 
   // ================================================================ boot & persistence
   async boot(): Promise<void> {
-    try { this.meta = migrateMeta(JSON.parse((await Storage.get(K_META)) ?? 'null')); } catch { this.meta = defaultMeta(); }
+    const readMeta = async (key: string): Promise<unknown> => { try { return JSON.parse((await Storage.get(key)) ?? 'null'); } catch { return null; } };
+    const main = await readMeta(K_META);
+    const usable = (o: unknown) => !!o && typeof o === 'object';
+    this.meta = migrateMeta(usable(main) ? main : await readMeta(K_META_BAK));
     try {
       const raw = JSON.parse((await Storage.get(K_RUN)) ?? 'null');
       if (raw && raw.v === 1 && raw.show && Array.isArray(raw.crate)) this.run = raw as RunState;
@@ -82,7 +87,9 @@ export class App {
 
   /** Save and wait until it is on disk (used before telling Google a purchase is delivered). */
   async saveNow(): Promise<void> {
-    await Storage.set(K_META, JSON.stringify(this.meta));
+    const m = JSON.stringify(this.meta);
+    await Storage.set(K_META, m);
+    await Storage.set(K_META_BAK, m);
     if (this.run) await Storage.set(K_RUN, JSON.stringify(this.run));
   }
 
@@ -126,7 +133,9 @@ export class App {
   }
 
   save(): void {
-    Storage.set(K_META, JSON.stringify(this.meta));
+    const m = JSON.stringify(this.meta);
+    Storage.set(K_META, m);
+    Storage.set(K_META_BAK, m);
     if (this.run) Storage.set(K_RUN, JSON.stringify(this.run)); else Storage.remove(K_RUN);
   }
 
@@ -976,7 +985,7 @@ export class App {
         } else if (r === 'pending') {
           this.pendingPurchases++; this.closeModal(); this.pendingNotice(); if (after) after();
         } else {
-          if (r === 'unavailable') this.toast('The store is not available right now. Please try again later.');
+          if (r === 'unavailable') this.toast(isNative ? 'The store is not available right now. Please try again later.' : 'Purchases are available in the Android app.');
           this.ticketShop(after, short);
         }
       } }, h('div', { class: 'charm big empty' }, '🎟'),
@@ -1004,7 +1013,7 @@ export class App {
           const o = await Store.buyPremium(), r = o.result;
           if (r === 'pending') { this.closeModal(); this.pendingNotice(); return; }
           if (r === 'purchased') { await this.deliver(CONFIG.premiumProductId, o.token!); Sfx.unlock(); this.stage.celebrate(8); this.closeModal(); this.toast('Thank you! Premium is active.'); if (this.screen === 'title') this.goTitle(); if (this.screen === 'workshop') this.goWorkshop(); }
-          else if (r === 'unavailable') this.toast('The store is not available right now. Please try again later.');
+          else if (r === 'unavailable') this.toast(isNative ? 'The store is not available right now. Please try again later.' : 'Purchases are available in the Android app.');
           else if (!this.modalOpen) this.premiumSheet();
         } }, `Unlock for ${this.price}`),
         h('button', { class: 'btn ghost wide', onclick: () => this.closeModal() }, 'Not now'))));
