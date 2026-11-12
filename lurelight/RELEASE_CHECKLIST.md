@@ -4,10 +4,9 @@ Status legend: `[x]` verified in this repo · `[ ]` not done / needs you · `[~]
 Last audit: 12 Nov 2026. Platform: Android, Godot 4.7 (GL Compatibility), AdMob + Play Billing Godot plugins.
 The step-by-step guide is `store/PUBLISHING.md`; this file is the release gate.
 
-> **Audit limitation.** This audit could not run Godot (downloading and executing the engine was not permitted in
-> the audit environment). Lurelight was reviewed by reading the code, and every edited script was syntax-checked
-> with `gdtoolkit` (`gdparse`). **Run `godot --path . -- --uitest --fakeads --fakestore` before release** — it now
-> includes a check for this audit's change.
+> **Verified in Godot 4.7 (12 Nov 2026):** `--uitest` passes with and without `--fakeads --fakestore`
+> (including the new cut-off-pearls check), and headless autoplay dives run 60–520 s without errors at 400–1,000 fps
+> with memory flat around 56 MB. Still not run on a physical phone.
 
 ## A. App store assets
 
@@ -28,10 +27,11 @@ The step-by-step guide is `store/PUBLISHING.md`; this file is the release gate.
 - [x] Dev flags (`--autoplay`, `--fakeads`, `--fakestore`, `--uitest`, …) only read command-line *user* args; a store install never receives them
 - [x] No secrets committed — release keystore and its password file are outside git
 - [x] Save — atomic write (temp file + rename); unreadable save falls back to defaults without crashing
-- [x] **Unfinished dives keep their pearls** (this audit): quitting from the pause menu, restarting from the pause menu, or the app being killed mid-dive now bank the dive's pearls and depth (no finish bonuses, so quitting a Daily Dive can't farm the streak bonus). Before, every pearl from that dive was silently lost
+- [x] **Unfinished dives keep their pearls** (verified by `--uitest`): quitting from the pause menu, restarting from the pause menu, or the app being killed mid-dive now bank the dive's pearls and depth (no finish bonuses, so quitting a Daily Dive can't farm the streak bonus). Before, every pearl from that dive was silently lost
 - [x] Permissions — VIBRATE (+ INTERNET/BILLING merged by the plugins)
-- [ ] Rebuild signed `.aab`/`.apk` after this audit and re-run `--uitest`
-- [ ] Target SDK — set by the Godot 4.7 Android template; confirm it meets Play's current requirement (API 36 for 2026) in the generated `android/build` before upload
+- [x] `--uitest` re-run after the audit and polish changes (both modes pass)
+- [x] Target SDK 36 — verified in the exported APK (`aapt2 dump badging`)
+- [x] Signed release AAB + APK exported 12 Nov 2026 with a new upload key (kept outside the repo), plus an arm64-only APK (85 MB vs 160 MB universal) for installing by hand. Built with `TEST_MODE := true` and no privacy URL, so for device and closed testing only
 
 ## C. Legal and compliance (not verified — needs you)
 
@@ -75,10 +75,8 @@ The step-by-step guide is `store/PUBLISHING.md`; this file is the release gate.
 
 | Severity | Item |
 |---|---|
-| Critical | Run `--uitest` (with and without `--fakeads --fakestore`) on the audited code — not possible in this audit |
 | Critical | First run on a physical Android phone |
 | Critical | Host privacy policy; set `PRIVACY_URL`; real AdMob ids, `TEST_MODE := false` for the production track |
 | High | Play products created and licence-tested; consent form tested with an EEA test device |
 | High | Data safety / ads / content rating; closed-test requirement |
-| Medium | Confirm the export template's target SDK meets Play's requirement |
 | Low | Idle reef / Play Games leaderboards (roadmap) |

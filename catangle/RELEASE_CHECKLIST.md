@@ -26,8 +26,10 @@ Last audit: 12 Nov 2026. Platform: Android (WebView shell around the web game in
 - [x] Loading / error handling — corrupt save falls back to backup; storage failures keep the game playing in memory
 - [x] WebView renderer crash recovery — `onRenderProcessGone` added this audit (restarts the screen instead of crashing)
 - [x] Permissions — INTERNET, ACCESS_NETWORK_STATE, VIBRATE, BILLING only
-- [~] Target SDK 36, min SDK 24 — set; **Gradle build not re-run after this audit's Java change** (no Android SDK in the audit container)
-- [ ] Final signed AAB build and `bundletool` install test
+- [x] Target SDK 36, min SDK 24 — verified in the built APK (`aapt2 dump badging`)
+- [x] Signed release APK + AAB built 12 Nov 2026 with a new upload key (kept outside the repo; see the delivery notes). Built with Google's **test** ad ids and the placeholder privacy URL, so they are for device testing and closed testing only
+- [ ] Install on a physical phone (no emulator possible in the build container)
+- [ ] Rebuild with real AdMob ids + privacy URL (raise `versionCode`) before production
 
 ## C. Legal and compliance (not verified — needs you)
 

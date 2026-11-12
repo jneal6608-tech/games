@@ -2,7 +2,7 @@
 
 Project 04. An idle roguelite defense game for Android: you keep the last campfire alight against waves of shades.
 
-- **Playable build:** `dist/emberhold-1.0.0-debug.apk` (install on any Android 8.0+ phone; uses Google's test ads).
+- **Playable build:** build it with `cd android && gradle assembleRelease` (signing in `~/.gradle/gradle.properties`, see `RELEASE_CHECKLIST.md`). The old prebuilt APK was removed because it predated the audit fixes.
 - **Why this game:** `docs/01-market-research.md` (22 concepts scored, sources cited).
 - **Design, economy, monetisation:** `docs/02-game-design.md`.
 - **What is left before the Play Store:** `docs/03-release-checklist.md`.

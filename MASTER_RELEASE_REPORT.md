@@ -4,16 +4,16 @@ Audit date: 12 November 2026. Each game has its own `RELEASE_CHECKLIST.md`; this
 
 ## How the audit was done, and its limits
 
-- Every game's existing automated suites were run before and after the changes (logic tests, browser end-to-end
-  tests in headless Chromium at phone sizes with touch emulation, balance simulators). Screenshots were reviewed for
-  visual defects. Bugs were reproduced before fixing where possible (the Emberhold relaunch bug failed on the
-  original code and passes on the fix).
-- **No game has been run on a physical Android device or emulator.** No Android SDK was available, so the small Java
-  changes (Catangle, Emberhold) are compiled-unverified.
-- **Lurelight (Godot) could not be run**: downloading and executing the Godot engine was not permitted in the audit
-  environment. Its code was reviewed by reading, and edited scripts were syntax-checked with `gdtoolkit`.
-- Live AdMob, the consent form and Google Play Billing have never been exercised for any game. All five use Google's
-  test ad ids and placeholder privacy-policy URLs.
+- Every game's automated suites were run before and after each change (logic tests, browser end-to-end tests in
+  headless Chromium at phone sizes with touch emulation, balance simulators, and Lurelight's own `--uitest` in
+  Godot 4.7). Screenshots were reviewed for visual defects. Bugs were reproduced before fixing where possible.
+- **Second round (same day):** Godot 4.7 and the Android SDK were installed (Godot verified against its official
+  SHA-512 checksums). Lurelight's UI test now passes in both modes, and **all five games build as signed release
+  APKs and AABs** (target SDK 36), each with its own new upload key kept outside the repo.
+- **No game has been run on a physical Android device or emulator** (the build machine has no hardware
+  virtualisation). The builds use Google's test ad ids and placeholder privacy URLs, so they are for device testing
+  and Play closed testing, not production.
+- Live AdMob, the consent form and Google Play Billing have never been exercised for any game.
 
 ## Readiness scores
 
@@ -22,14 +22,15 @@ items that need your accounts or a real device (privacy policy hosting, real ad 
 
 | Game | Function /25 | Stability /20 | Mobile /15 | UI/UX /15 | Gameplay /15 | Perf /10 | **Total** | Publish-ready? |
 |---|---|---|---|---|---|---|---|---|
-| Catangle | 23 | 18 | 12 | 14 | 12 | 9 | **88** | No — external blockers only |
-| Emberhold | 23 | 18 | 12 | 13 | 13 | 9 | **88** | No — external blockers only |
-| Fuseworks | 23 | 18 | 12 | 14 | 13 | 7 | **87** | No — external blockers only |
-| Brewfall | 23 | 18 | 12 | 13 | 11 | 8 | **85** | No — external blockers + human balance pass |
-| Lurelight | 19 | 13 | 9 | 12 | 13 | 6 | **72** | No — engine test run + device test needed first |
+| Catangle | 23 | 19 | 12 | 14 | 12 | 9 | **89** | No — external blockers only |
+| Emberhold | 23 | 19 | 12 | 14 | 13 | 9 | **90** | No — external blockers only |
+| Fuseworks | 23 | 19 | 12 | 14 | 13 | 7 | **88** | No — external blockers only |
+| Brewfall | 23 | 19 | 12 | 13 | 11 | 8 | **86** | No — external blockers + human balance pass |
+| Lurelight | 22 | 18 | 11 | 13 | 12 | 8 | **84** | No — external blockers + human balance pass |
 
-Mobile scores are capped at 12 because nothing has touched a real phone. Lurelight's lower scores reflect what could
-not be verified, not known defects.
+Mobile scores are capped at 12 because nothing has touched a real phone. Lurelight rose from 72 once its test suite
+and autoplay sessions ran cleanly in the engine; its gameplay score reflects that bot balance runs were too noisy
+(800 m to 7,000 m for the same fish) to confirm the difficulty curve without human playtesting.
 
 ## Per-game reports
 
@@ -87,8 +88,8 @@ not be verified, not known defects.
 4–6. No other changes: without the engine, further tuning or visual work could not be verified.
 7. **New:** uitest check for the cut-off case; release checklist.
 8. **Remaining:** everything that needs the engine — run `--uitest`, frame rate, visuals at real sizes.
-9. **Testing:** syntax check of all scripts only. **The changes have not been executed.**
-10. **External:** engine test run, privacy URL, AdMob ids and `TEST_MODE`, products, device test.
+9. **Testing:** `--uitest` passes with and without simulated ads/store (including the new cut-off check); headless autoplay dives for all four fish run without errors at 400–1,000 fps with memory flat at ~56 MB; signed AAB/APK exported.
+10. **External:** privacy URL, AdMob ids and `TEST_MODE`, products, device test, human balance pass.
 
 ## Outstanding issues by severity (all games)
 
@@ -97,11 +98,9 @@ not be verified, not known defects.
 | Critical | Privacy policy not hosted; in-game URL is a placeholder or empty | all five |
 | Critical | Google test ad ids in place; real AdMob app + unit ids needed | all five |
 | Critical | Never installed and played on a physical Android phone | all five |
-| Critical | Engine-level test run of the audited code (`--uitest`) | Lurelight |
 | High | Play Console products not created; purchases never tested with licence testers | all five |
 | High | Data safety, ads and content-rating forms; closed-test requirement for personal Play accounts | all five |
-| High | Gradle build after this audit's Java changes / SDK 36 bump | Catangle, Emberhold |
-| High | Human balance and feel playtest | Brewfall (bot-tuned only), Lurelight |
+| High | Human balance and feel playtest | Brewfall (bot-tuned only), Lurelight (bot runs too noisy) |
 | Medium | Name/trademark clearance | all five |
 | Medium | Crash reporting / analytics (needs your approval and privacy-policy update) | all five |
 | Medium | Chain frame rate on large low-end screens | Fuseworks |
@@ -113,7 +112,22 @@ not be verified, not known defects.
 2. **Emberhold** — strongest retention loop and no forced ads; only external blockers plus a Gradle build check.
 3. **Fuseworks** — most-tested codebase and the most distinctive concept; verify chain frame rate on a low-end phone first.
 4. **Brewfall** — technically sound, but merge physics and balance need a human feel pass before launch.
-5. **Lurelight** — likely good, but it is the least verified: run the Godot test suite and a device session before committing to a date.
+5. **Lurelight** — now verified in the engine; the most action-heavy of the five, so give it the longest device and balance test before committing to a date.
 
 Shipping one at a time lets the first launch's lessons (consent form, billing, Play review) feed the rest, since all
 five share the same publishing path.
+
+## Second round: polish and builds (12 Nov 2026)
+
+| Game | Polish | Build |
+|---|---|---|
+| Catangle | Win screen shows how many levels remain to the chapter chest | Signed APK + AAB |
+| Emberhold | "New Record!" only when a previous record is beaten; old pre-fix binaries removed from `dist/` | Signed APK + AAB (SDK 36 bump verified) |
+| Brewfall | Toasts moved to the top so they never cover Play / Daily Brew | Signed APK + AAB |
+| Fuseworks | End screen shows the next Workshop unlock with a ticket meter; plural fixes | Signed APK + AAB |
+| Lurelight | Menu buttons and HUD text enlarged (secondary labels were ~9 px on a phone) | Signed APK + AAB |
+
+All suites re-run green after these changes. The upload keys and passwords were delivered privately, outside git:
+back each one up in two places; every future update of that game must be signed with the same key.
+
+Use `/gamelaunch` (in `.claude/commands/`) for the step-by-step launch walkthrough.

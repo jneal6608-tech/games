@@ -26,8 +26,7 @@ See also `TESTING_REPORT.md`, `MONETIZATION_PLAN.md`, `NEXT_STEPS.md`.
 - [x] WebView renderer crash recovery (`onRenderProcessGone` → recreate)
 - [x] Permissions — INTERNET, ACCESS_NETWORK_STATE, VIBRATE, BILLING
 - [x] Target SDK 36
-- [~] Bundle rebuilt this audit (`android/app/src/main/assets/www` updated); **Gradle build not re-run** (no Android SDK in the audit container)
-- [ ] The debug APK referenced in `NEXT_STEPS.md` (`release/…`) is not in the repo — build a fresh one
+- [x] Signed release APK + AAB built 12 Nov 2026 with a new upload key (kept outside the repo). Built with Google's **test** ad ids and the placeholder privacy URL, so they are for device and closed testing only; rebuild with real ids (raise `versionCode`) before production
 
 ## C. Legal and compliance (not verified — needs you)
 

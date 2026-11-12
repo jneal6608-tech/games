@@ -27,7 +27,8 @@ The step-by-step publishing guide is `docs/PUBLISHING.md`; this file is the rele
 - [x] Permissions — INTERNET only (plus what the AdMob/Billing libraries merge in)
 - [x] Target SDK 36
 - [ ] R8/minify is off for release (`minifyEnabled false`) — safe for Capacitor, larger APK. Optional to enable with keep rules
-- [ ] Gradle release build + install on a device after this audit (no Android SDK in the audit container)
+- [x] Signed release APK + AAB built 12 Nov 2026 with a new upload key (kept outside the repo). Built with Google's **test** ad ids and the placeholder privacy URL, so they are for device and closed testing only; rebuild with real ids (raise `versionCode`) before production
+- [ ] Install on a physical device
 
 ## C. Legal and compliance (not verified — needs you)
 

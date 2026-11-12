@@ -19,7 +19,7 @@ See also `docs/03-release-checklist.md` (original build notes) and `docs/04-qa-r
 
 - [x] Production build config — release type uses `minifyEnabled true` + `shrinkResources true`; signing from `~/.gradle/gradle.properties`
 - [ ] **Application id final** — `com.emberhold.game` (permanent after first upload)
-- [~] **Target SDK raised 35 → 36 this audit** (Play's 2026 requirement for new apps/updates). App was already edge-to-edge. **Needs a Gradle build + device check** — no Android SDK in the audit container
+- [x] **Target SDK raised 35 → 36** (required for new apps/updates since 31 Aug 2026) — Gradle build passes; verified in the APK. Device check still needed
 - [x] No debug interfaces — the test store needs `?devstore=1`; the web "Bonus" placeholder is labelled honestly as a web-preview bonus
 - [x] No secrets in the repo — keystore values come from `~/.gradle/gradle.properties`
 - [ ] **Real AdMob ids** — `android/app/build.gradle` still uses Google's public test app id and rewarded unit
@@ -27,7 +27,8 @@ See also `docs/03-release-checklist.md` (original build notes) and `docs/04-qa-r
 - [x] Error handling — `G.fail` saves and shows a recoverable error card; corrupt save → backup → clean start (tested)
 - [x] WebView renderer crash recovery — added this audit
 - [x] Permissions — INTERNET, ACCESS_NETWORK_STATE, VIBRATE, BILLING
-- [ ] **Rebuild `dist/` APK/AAB** — the checked-in `emberhold-1.0.0-debug.apk` and `-release.aab` predate this audit's fixes. The itch zip was rebuilt.
+- [x] Signed release APK + AAB built 12 Nov 2026 with a new upload key (kept outside the repo). Built with Google's **test** ad ids and the placeholder privacy URL, so they are for device and closed testing only; rebuild with real ids (raise `versionCode`) before production
+- [x] The old pre-fix `dist/` APK/AAB were removed from the repo so they cannot be shipped by mistake (the itch zip was rebuilt)
 
 ## C. Legal and compliance (not verified — needs you)
 
@@ -77,7 +78,7 @@ See also `docs/03-release-checklist.md` (original build notes) and `docs/04-qa-r
 |---|---|
 | Critical | Host privacy policy; replace `EH.PRIVACY_URL` |
 | Critical | Real AdMob ids |
-| Critical | Fresh signed AAB built from current source and installed on a physical device (verifies the SDK 36 bump and new Java code) |
+| Critical | Install the new signed build on a physical device (build itself verified) |
 | High | Play products created and licence-tested |
 | High | Data safety, ads, content-rating forms |
 | High | Closed testing track requirement (personal accounts) |
