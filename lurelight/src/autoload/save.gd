@@ -19,6 +19,7 @@ var data := {
 	"clip_mode": false,
 	"tutorial_done": false,
 	"live_depth": 0,  # depth of a dive in progress; non-zero at launch means the last dive was cut off
+	"live_pearls": 0,  # pearls collected so far in that dive, kept if it is cut off
 	# progression (rules are in Meta)
 	"upgrades": {},  # upgrade id -> level
 	"fish": "angler",
@@ -117,15 +118,27 @@ func record_run(depth: int, kills: int, combo: int, pearls: int, daily: bool) ->
 	return new_best
 
 
-func mark_live(depth: int) -> void:
+func mark_live(depth: int, pearls := 0) -> void:
 	data["live_depth"] = maxi(depth, 1)
+	data["live_pearls"] = maxi(pearls, 0)
 	save_game()
 
 
 func clear_live() -> void:
-	if int(data["live_depth"]) != 0:
+	if int(data["live_depth"]) != 0 or int(data["live_pearls"]) != 0:
 		data["live_depth"] = 0
+		data["live_pearls"] = 0
 		save_game()
+
+
+func bank_dive(depth: int, pearls: int) -> void:
+	## Keeps what an unfinished dive earned (quit from the pause menu, or cut off when the app was killed):
+	## its pearls, and its depth toward the best dive. Depth and daily bonuses still need a finished dive.
+	data["pearls"] = int(data["pearls"]) + maxi(pearls, 0)
+	data["best_depth"] = maxi(int(data["best_depth"]), depth)
+	data["live_depth"] = 0
+	data["live_pearls"] = 0
+	save_game()
 
 
 func take_cut_off() -> int:
@@ -134,7 +147,5 @@ func take_cut_off() -> int:
 	var d := int(data["live_depth"])
 	if d <= 0:
 		return 0
-	data["live_depth"] = 0
-	data["best_depth"] = maxi(int(data["best_depth"]), d)
-	save_game()
+	bank_dive(d, int(data["live_pearls"]))
 	return d

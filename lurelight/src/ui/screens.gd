@@ -84,7 +84,7 @@ static func menu(on: Dictionary, cut_off := 0) -> Control:
 	v.add_child(UI.label("Swing the light. Survive the deep.", 40, UI.DIM, "body"))
 	v.add_child(_spacer(0, true))
 	if cut_off > 0:
-		var note := UI.label("Your last dive was cut off at %s m.\nIt still counts toward your best." % UI.commas(cut_off), 30, UI.GOLD, "body_black")
+		var note := UI.label("Your last dive was cut off at %s m.\nIts depth and pearls still count." % UI.commas(cut_off), 30, UI.GOLD, "body_black")
 		note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		v.add_child(note)
 	var best := int(Save.data["best_depth"])

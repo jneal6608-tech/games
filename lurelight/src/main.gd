@@ -257,6 +257,7 @@ func _revive_skip(stats: Dictionary) -> void:
 func _finish_run(stats: Dictionary) -> void:
 	state = State.END
 	Save.data["live_depth"] = 0  # saved by finish_run below
+	Save.data["live_pearls"] = 0  # the finished dive pays its pearls through finish_run
 	var result := Meta.finish_run(stats, daily)
 	Ads.run_finished()
 	if result["new_best"]:
@@ -335,7 +336,23 @@ func _pause() -> void:
 	state = State.PAUSE
 	world.paused = true
 	_release_touch()
-	_set_screen(Screens.pause(_resume, _start_run, _show_menu, _open_settings))
+	_set_screen(Screens.pause(_resume, _restart_from_pause, _quit_dive, _open_settings))
+
+
+func _bank_paused_dive() -> void:
+	## A dive left from the pause menu keeps its pearls and counts toward the best depth (no finish bonuses).
+	if state == State.PAUSE and world != null and not world.attract and not world.bot:
+		Save.bank_dive(int(world.depth), world.pearls_run)
+
+
+func _quit_dive() -> void:
+	_bank_paused_dive()
+	_show_menu()
+
+
+func _restart_from_pause() -> void:
+	_bank_paused_dive()
+	_start_run()
 
 
 func _resume() -> void:
@@ -449,7 +466,7 @@ func _process(delta: float) -> void:
 		_toasts.add_child(MetaScreens.toast(String(a["name"]).to_upper(), "+%d pearls" % int(a["reward"])))
 	if state == State.PLAY and world != null and not world.bot and _clock - _live_saved_t > 10.0:
 		_live_saved_t = _clock
-		Save.mark_live(int(world.depth))
+		Save.mark_live(int(world.depth), world.pearls_run)
 	if _args.has("log") and world != null and not world.attract and int(_clock / 15.0) != int((_clock - delta) / 15.0):
 		print("LOG t=%d depth=%d zone=%d kills=%d lvl=%d hearts=%d/%d enemies=%d shots=%d orbs=%d boss=%s fps=%d lure=%d fish=%d nodes=%d objs=%d particles=%d mem=%.1fMB" % [int(world.t), int(world.depth), world.zone, world.kills,
 			world.level, world.hearts, world.max_hearts, world.enemies.size(), world.shots.size(), world.orbs.size(), str(world.boss != null), Engine.get_frames_per_second(), int(world.lures[0].speed), int(world.fish.vel.length()),

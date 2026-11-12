@@ -132,9 +132,11 @@ static func run(m: Node) -> void:
 		await _ads(m, tree)
 
 	# a dive that is killed mid-way (tab or app closed) is detected on the next launch
-	Save.mark_live(2480)
+	Save.data["pearls"] = 0
+	Save.mark_live(2480, 37)
 	Save.load_game()
 	_check("a cut-off dive is detected on relaunch", Save.take_cut_off() == 2480 and int(Save.data["live_depth"]) == 0 and int(Save.data["best_depth"]) >= 2480)
+	_check("a cut-off dive keeps its pearls, once", int(Save.data["pearls"]) == 37 and int(Save.data["live_pearls"]) == 0)
 	_check("a dive ended normally is not reported", Save.take_cut_off() == 0)
 
 	# save file round trip
