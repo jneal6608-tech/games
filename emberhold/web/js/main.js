@@ -351,6 +351,9 @@
         recovered = S.pending; this.addEmbers(S.pending.embers); this.addGems(S.pending.gems || 0);
       }
       S.pending = null;
+      // Persist the recovery at once: a reload before the delayed save below must not grant the same Embers again.
+      // lastSeen is kept as it was so this save does not swallow the offline-earnings window.
+      if (recovered) { var seen = S.lastSeen; EH.Save.save(); S.lastSeen = seen; }
       var off = this.computeOffline();
       EH.UI.show('home');
       root.addEventListener('resize', function () { EH.Render.resize(); });

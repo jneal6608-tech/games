@@ -38,6 +38,9 @@
       if (devStore) { EH.UI.confirm('TEST STORE', 'Simulate buying ' + EH.PRODUCT[sku].name + '?', function (ok) { cb(ok, ok ? '' : 'Cancelled'); }); return; }
       cb(false, 'Purchases are available in the Android app.');
     },
+    /** Ad-privacy (consent) choices: only shown when the consent SDK says the player must be offered them. */
+    privacyOptionsRequired: function () { if (!bridge || !bridge.privacyOptionsRequired) return false; try { return !!bridge.privacyOptionsRequired(); } catch (e) { return false; } },
+    privacyOptions: function () { if (bridge && bridge.showPrivacyOptions) { try { bridge.showPrivacyOptions(); } catch (e) { /* ignore */ } } },
     restore: function () { if (bridge) { try { bridge.restorePurchases(); } catch (e) { /* ignore */ } } },
     haptic: function (ms) {
       var S = EH.Save.data;

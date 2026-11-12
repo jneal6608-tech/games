@@ -86,8 +86,8 @@
       try {
         this.data.lastSeen = Date.now();
         var d = JSON.stringify(this.data);
-        var prev = root.localStorage.getItem(KEY);
-        if (prev) root.localStorage.setItem(BAK, prev);
+        // Rotate only a valid save into the backup slot, so a corrupted main copy never overwrites a good backup.
+        if (read(KEY)) root.localStorage.setItem(BAK, root.localStorage.getItem(KEY));
         root.localStorage.setItem(KEY, JSON.stringify({ d: d, h: hash(d) }));
         this.failed = false;
         return true;

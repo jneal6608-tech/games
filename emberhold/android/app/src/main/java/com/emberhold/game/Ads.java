@@ -36,6 +36,19 @@ final class Ads {
         if (info.canRequestAds()) init();
     }
 
+    /** True when the consent SDK says this user must be offered a way to change their ad-privacy choices (e.g. EEA/UK). */
+    boolean privacyOptionsRequired() {
+        return UserMessagingPlatform.getConsentInformation(host).getPrivacyOptionsRequirementStatus()
+                == ConsentInformation.PrivacyOptionsRequirementStatus.REQUIRED;
+    }
+
+    /** Re-opens the consent form so the player can change their choice (required entry point under UMP policy). */
+    void showPrivacyOptions() {
+        UserMessagingPlatform.showPrivacyOptionsForm(host, err -> {
+            if (UserMessagingPlatform.getConsentInformation(host).canRequestAds()) init();
+        });
+    }
+
     private void init() {
         if (initialized) return;
         initialized = true;

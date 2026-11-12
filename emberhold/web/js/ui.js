@@ -175,7 +175,7 @@
       m.addEventListener('click', function (e) { var k = e.target.closest('[data-k]'); if (!k) return; UI.close(m); cb(k.getAttribute('data-k') === 'y'); });
     },
     fakeAd: function (cb) {   // web / preview builds only: stands in for a rewarded video
-      var m = UI.modal('<div class="adcard"><h2>Sponsored break</h2><p>Preview build — a rewarded video plays here in the Android app.</p><div class="spin"></div><p id="adT">Reward in 3…</p></div>', true);
+      var m = UI.modal('<div class="adcard"><h2>Bonus</h2><p>Web preview: bonuses are free here. In the Android app this is an optional short video.</p><div class="spin"></div><p id="adT">Reward in 3…</p></div>', true);
       var n = 3, iv = setInterval(function () {
         n--; var t = m.querySelector('#adT'); if (t) t.textContent = 'Reward in ' + n + '…';
         if (n <= 0) { clearInterval(iv); UI.close(m); cb(true); }
@@ -241,7 +241,7 @@
       });
     },
     summary: function (o) {
-      var doubled = false;
+      var doubled = false, busy = false;
       var h = '<h2>' + (o.newBest ? 'New Record!' : 'The fire rests') + '</h2><p>' + EH.TIERS[o.tier].name + ' · reached wave ' + o.wave + '</p>' +
         '<div class="big-num">🔥 <span id="sumE">+' + fmt(o.embers) + '</span></div>';
       o.notes.forEach(function (n) { h += '<div class="note">' + n + '</div>'; });
@@ -254,8 +254,9 @@
       m.addEventListener('click', function (e) {
         var k = e.target.closest('[data-k]'); if (!k) return; var key = k.getAttribute('data-k');
         if (key === 'dbl') {
-          if (doubled) return;
-          G.doubleEmbers(o.embers, function (ok) { if (ok) { doubled = true; k.disabled = true; k.textContent = 'Doubled ✓'; m.querySelector('#sumE').textContent = '+' + fmt(o.embers * 2); } else UI.toast('No reward — the ad was not completed.'); });
+          if (doubled || busy) return;
+          busy = true;   // one reward request at a time: a second tap while the video loads must not pay twice
+          G.doubleEmbers(o.embers, function (ok) { busy = false; if (ok) { doubled = true; k.disabled = true; k.textContent = 'Doubled ✓'; m.querySelector('#sumE').textContent = '+' + fmt(o.embers * 2); } else UI.toast('No reward — the ad was not completed.'); });
         } else { $('modals').innerHTML = ''; G.toMenu(); if (key === 'again' && S.tut.workshop) G.startRun(); }
       });
     },
@@ -303,6 +304,7 @@
         tg('shake', 'Screen shake') + tg('leftHand', 'Left-handed abilities') +
         '<h3>Save data</h3><div class="btns" style="margin-top:0"><button class="btn" data-k="exp">Export / import save</button>' +
         (EH.Platform.mode === 'android' ? '<button class="btn" data-k="rest">Restore purchases</button>' : '') +
+        (EH.Platform.privacyOptionsRequired() ? '<button class="btn" data-k="adpriv">Ad privacy choices</button>' : '') +
         '<button class="btn" data-k="priv">Privacy policy</button><button class="btn ghost" data-k="reset">Erase all progress</button><button class="btn primary" data-k="x">Done</button></div>' +
         '<p class="fine">Emberhold v' + EH.VERSION + '</p>';
       var m = UI.modal(h);
@@ -315,6 +317,7 @@
         if (k === 'x') { EH.Save.save(); UI.close(m); }
         else if (k === 'rest') { EH.Platform.restore(); UI.toast('Checking your purchases…'); }
         else if (k === 'priv') EH.Platform.openUrl(EH.PRIVACY_URL);
+        else if (k === 'adpriv') EH.Platform.privacyOptions();
         else if (k === 'exp') UI.saveCode();
         else if (k === 'reset') UI.confirm('Erase all progress?', 'This permanently deletes your save. Purchases can be restored afterwards.', function (ok) {
           if (!ok) return; EH.Save.reset(); root.location.reload();

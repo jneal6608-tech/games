@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.JavascriptInterface;
+import android.webkit.RenderProcessGoneDetail;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
@@ -84,6 +85,17 @@ public class MainActivity extends ComponentActivity {
                 Uri u = request.getUrl();
                 if (u.toString().startsWith(ORIGIN)) return false;
                 openExternal(u.toString());
+                return true;
+            }
+
+            @Override
+            @android.annotation.TargetApi(26)
+            public boolean onRenderProcessGone(WebView view, RenderProcessGoneDetail detail) {
+                // The WebView renderer died (usually low memory). Start a fresh screen instead of letting the app crash;
+                // all progress lives in the save, which is written on every change and on pause. A fresh start (not
+                // recreate()) avoids saving the dead WebView's state.
+                startActivity(new Intent(MainActivity.this, MainActivity.class));
+                finish();
                 return true;
             }
         });
@@ -196,6 +208,16 @@ public class MainActivity extends ComponentActivity {
                     }
                 } catch (Exception ignored) { }
             });
+        }
+
+        @JavascriptInterface
+        public boolean privacyOptionsRequired() {
+            try { return ads != null && ads.privacyOptionsRequired(); } catch (Exception e) { return false; }
+        }
+
+        @JavascriptInterface
+        public void showPrivacyOptions() {
+            runOnUiThread(() -> ads.showPrivacyOptions());
         }
 
         @JavascriptInterface
