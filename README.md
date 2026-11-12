@@ -11,3 +11,10 @@ Five mobile games (Android). Each folder is self-contained and has its own docs 
 | [Brewfall](brewfall/) | Merge roguelite: drop essences into a cauldron, merge them, and buy charms that bend the scoring. |
 
 Release status for all five: [MASTER_RELEASE_REPORT.md](MASTER_RELEASE_REPORT.md). Each game folder has a `RELEASE_CHECKLIST.md`.
+
+## Launch guide
+
+In Claude Code, run `/gamelaunch` (optionally with a game folder or an `.apk` path, e.g. `/gamelaunch catangle`) for a
+step-by-step, one-step-at-a-time guide from "I have an APK" to "the game is live". It inspects the APK, explains why
+Google Play needs an `.aab`, walks through accounts, policies, testing tracks and other stores, and keeps a
+`LAUNCH_PROGRESS.md` so you can stop and resume. The command lives in `.claude/commands/gamelaunch.md`.
