@@ -1,0 +1,53 @@
+plugins { id 'com.android.application' }
+
+// Release signing: put these four values in ~/.gradle/gradle.properties (never in git).
+def ks = ['EMBERHOLD_STORE_FILE', 'EMBERHOLD_STORE_PASSWORD', 'EMBERHOLD_KEY_ALIAS', 'EMBERHOLD_KEY_PASSWORD']
+def hasKeystore = ks.every { project.hasProperty(it) }
+
+android {
+    namespace 'com.emberhold.game'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.emberhold.game'
+        minSdk 26
+        targetSdk 35
+        versionCode 1
+        versionName '1.0.0'
+        // AdMob IDs. These are Google's public TEST ids: replace both with your own before release.
+        manifestPlaceholders = [admobAppId: 'ca-app-pub-3940256099942544~3347511713']
+        buildConfigField 'String', 'REWARDED_UNIT', '"ca-app-pub-3940256099942544/5224354917"'
+    }
+    signingConfigs {
+        release {
+            if (hasKeystore) {
+                storeFile file(project.property('EMBERHOLD_STORE_FILE'))
+                storePassword project.property('EMBERHOLD_STORE_PASSWORD')
+                keyAlias project.property('EMBERHOLD_KEY_ALIAS')
+                keyPassword project.property('EMBERHOLD_KEY_PASSWORD')
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (hasKeystore) signingConfig signingConfigs.release
+        }
+    }
+    buildFeatures { buildConfig true }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+    // The game itself lives in ../../web and is packaged as-is.
+    sourceSets { main { assets.srcDirs = ['../../web'] } }
+    lint { abortOnError true; checkReleaseBuilds true }
+}
+
+dependencies {
+    implementation 'androidx.core:core:1.15.0'
+    implementation 'androidx.activity:activity:1.9.3'
+    implementation 'androidx.webkit:webkit:1.12.1'
+    implementation 'com.google.android.gms:play-services-ads:24.4.0'
+    implementation 'com.google.android.ump:user-messaging-platform:3.2.0'
+    implementation 'com.android.billingclient:billing:8.0.0'
+}

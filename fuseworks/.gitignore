@@ -1,0 +1,9 @@
+node_modules/
+dist/
+dist-single/
+*.log
+*.keystore
+*.jks
+e2e/shots/
+handover/
+e2e/shots/
