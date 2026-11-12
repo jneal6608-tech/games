@@ -169,8 +169,8 @@ export function runTickets(run: RunState): RunReward {
     if (medal > 0) parts.push({ label: ['', 'Bronze medal', 'Silver medal', 'Gold medal'][medal], n: medal * 4 });
   } else {
     const mult = STAKES[run.stake - 1].ticketMult;
-    parts.push({ label: `${run.stats.showsCleared} shows cleared`, n: Math.round(run.stats.showsCleared * TICKETS_PER_SHOW * mult) });
-    if (run.stats.nightsCleared) parts.push({ label: `${run.stats.nightsCleared} nights completed`, n: Math.round(run.stats.nightsCleared * TICKETS_PER_NIGHT * mult) });
+    parts.push({ label: `${run.stats.showsCleared} show${run.stats.showsCleared === 1 ? "" : "s"} cleared`, n: Math.round(run.stats.showsCleared * TICKETS_PER_SHOW * mult) });
+    if (run.stats.nightsCleared) parts.push({ label: `${run.stats.nightsCleared} night${run.stats.nightsCleared === 1 ? "" : "s"} completed`, n: Math.round(run.stats.nightsCleared * TICKETS_PER_NIGHT * mult) });
     if (run.mode === 'festival' && run.stats.nightsCleared >= 6) parts.push({ label: 'Festival complete', n: Math.round(TICKETS_WIN * mult) });
   }
   return { tickets: parts.reduce((a, p) => a + p.n, 0), parts, won, newStake: null, medal, dailyBest: false, endlessBest: false };

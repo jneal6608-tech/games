@@ -107,6 +107,8 @@ svg { width: 1em; height: 1em; display: block; flex: none; }
 .note { background: #FFEFD6; border-radius: 16px; padding: 10px 12px; font-size: 16px; display: flex; align-items: center; gap: 10px; text-align: left; }
 .note svg { font-size: 34px; }
 .note canvas { width: 96px; height: 56px; flex: none; }
+.next-chest { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0; font-size: 15px; color: rgba(90, 53, 38, .72); }
+.next-chest svg { font-size: 22px; flex: none; }
 .btn .sub { font-size: 14px; font-weight: 500; opacity: .9; }
 .btn-col { display: flex; flex-direction: column; gap: 10px; }
 

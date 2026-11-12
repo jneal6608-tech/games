@@ -483,6 +483,10 @@ function onWin() {
       fish += ECON.chapterChest; save.hints++;
       notes.push(`<div class="note">${ic('chest')}<span><b>Chapter ${v.n / 10} complete!</b><br>Chest: +${ECON.chapterChest} fish and a free hint.</span></div>`);
     }
+    else {
+      const left = 10 - (v.n % 10);
+      notes.push(`<p class="next-chest">${ic('chest')}<span>${left === 1 ? 'Next level opens' : `${left} more levels to`} the chapter chest</span></p>`);
+    }
     const unlock = COATS.find((c) => c.level === v.n && !save.coats.includes(c.id));
     if (unlock) {
       save.coats.push(unlock.id);

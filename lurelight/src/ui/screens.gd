@@ -114,8 +114,8 @@ static func menu(on: Dictionary, cut_off := 0) -> Control:
 	trio.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	v.add_child(trio)
 	for item: Array in [["FISH", "fish", Meta.can_unlock_fish()], ["UPGRADES", "shop", Meta.can_buy_something()], ["AWARDS", "awards", false]]:
-		var b := UI.button(item[0], false, 25)
-		b.custom_minimum_size.y = 100
+		var b := UI.button(item[0], false, 32)
+		b.custom_minimum_size.y = 112
 		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		if item[2]:
 			# something here is affordable right now
@@ -128,13 +128,13 @@ static func menu(on: Dictionary, cut_off := 0) -> Control:
 	last.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	v.add_child(last)
 	if Store.available():
-		var shop := UI.button("STORE", false, 26)
-		shop.custom_minimum_size.y = 88
+		var shop := UI.button("STORE", false, 32)
+		shop.custom_minimum_size.y = 104
 		shop.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		shop.pressed.connect(on["store"])
 		last.add_child(shop)
-	var settings := UI.button("SETTINGS", false, 26)
-	settings.custom_minimum_size.y = 88
+	var settings := UI.button("SETTINGS", false, 32)
+	settings.custom_minimum_size.y = 104
 	settings.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	settings.pressed.connect(on["settings"])
 	last.add_child(settings)

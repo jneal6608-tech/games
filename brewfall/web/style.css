@@ -94,7 +94,7 @@ svg.i{width:1em;height:1em;vertical-align:-.14em;fill:currentColor;flex:none}
 .lines{margin:10px 0}.lines div{display:flex;justify-content:space-between;padding:5px 2px;border-bottom:1px dashed var(--line);font-weight:700;font-size:14px}
 .bigwin{font-size:34px;font-weight:900;text-align:center;margin:8px 0}
 @keyframes fade{from{opacity:0}}
-#toasts{position:fixed;left:0;right:0;bottom:calc(84px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:6px;z-index:40;pointer-events:none}
+#toasts{position:fixed;left:0;right:0;top:calc(62px + env(safe-area-inset-top));display:flex;flex-direction:column;align-items:center;gap:6px;z-index:40;pointer-events:none}
 .toast{background:#fff;color:#2a1a55;font-weight:800;padding:10px 16px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,.4);animation:rise .2s;max-width:88%;text-align:center}
 .fake-ad{position:fixed;inset:0;z-index:99;background:#000;color:#fff;display:grid;place-items:center;text-align:center;font-size:22px;font-weight:800}
 .stat{display:flex;justify-content:space-between;padding:7px 2px;border-bottom:1px solid var(--line);font-weight:700}

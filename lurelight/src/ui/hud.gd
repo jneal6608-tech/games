@@ -207,7 +207,7 @@ func _draw_hud() -> void:
 	var k := clampf(world.xp / world.xp_need, 0.0, 1.0)
 	if k > 0.01:
 		_bar(c, Rect2(bx, by, maxf(bh, bw * k), bh), UI.MINT.lerp(UI.GOLD, k * k))
-	_text(c, body, Vector2(bx + 6.0, by + 54.0), "LV %d" % world.level, 30, UI.MINT, HORIZONTAL_ALIGNMENT_LEFT)
+	_text(c, body, Vector2(bx + 6.0, by + 54.0), "LV %d" % world.level, 36, UI.MINT, HORIZONTAL_ALIGNMENT_LEFT)
 
 	# hearts
 	var hy := top + 100.0
@@ -220,11 +220,11 @@ func _draw_hud() -> void:
 		c.draw_texture_rect(_heart, Rect2(bx + i * (hs + 3.0) + (hs - s) * 0.5, hy + (54.0 - s) * 0.5, s, s), false, col)
 	# pearls this run
 	c.draw_texture_rect(_pearl, Rect2(bx - 4.0, hy + 62.0, 48, 48), false)
-	_text(c, body, Vector2(bx + 48.0, hy + 98.0), str(world.pearls_run), 32, Color("d8ecff"), HORIZONTAL_ALIGNMENT_LEFT)
+	_text(c, body, Vector2(bx + 48.0, hy + 98.0), str(world.pearls_run), 38, Color("d8ecff"), HORIZONTAL_ALIGNMENT_LEFT)
 
 	# depth
 	_text(c, display, Vector2(w * 0.5, top + 126.0), "%s m" % UI.commas(int(_depth_shown)), 58, UI.TEXT)
-	_text(c, body, Vector2(w * 0.5, top + 164.0), String(world.zone_def(world.zone)["name"]), 26, UI.DIM)
+	_text(c, body, Vector2(w * 0.5, top + 164.0), String(world.zone_def(world.zone)["name"]), 30, UI.DIM)
 
 	# pause glyph
 	if world.running:

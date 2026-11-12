@@ -231,7 +231,7 @@
       this.summaryOpen = true;
       r.over = true;
       var embers = r.finalEmbers(), wave = r.wave, tier = r.tier, notes = [];
-      var newBest = wave > S.bestWave[tier];
+      var prevBest = S.bestWave[tier], newBest = wave > prevBest;
       S.pending = null;
       this.addEmbers(embers); this.addGems(r.gems);
       this.bump('kills', r.kills); this.bump('bosses', r.bossKills); this.bump('boons', r.boonsTaken);
@@ -248,7 +248,7 @@
       if (beforeBest < 20 && nowBest >= 20) notes.push('<b>3× speed</b> unlocked');
       EH.ABILITIES.forEach(function (a) { if (a.unlockWave && beforeBest < a.unlockWave && nowBest >= a.unlockWave) notes.push('Ability available in the Workshop: <b>' + a.name + '</b>'); });
       EH.Save.save();
-      EH.UI.summary({ wave: wave, tier: tier, embers: embers, gems: r.gems, kills: r.kills, time: r.time, newBest: newBest, notes: notes });
+      EH.UI.summary({ wave: wave, tier: tier, embers: embers, gems: r.gems, kills: r.kills, time: r.time, newBest: newBest && prevBest > 0, notes: notes });
     },
     doubleEmbers: function (embers, cb) {
       EH.Platform.rewarded('double_embers', function (ok) {

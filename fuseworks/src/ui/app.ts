@@ -871,6 +871,7 @@ export class App {
           if (this.screen === 'end') this.goEnd();
         } }, this.adLabel(`Double tickets (+${reward.tickets})`)) : null,
         reward.newStake ? h('p', { class: 'ok', style: 'text-align:center' }, `New stake unlocked: ${STAKES[reward.newStake - 1].name}`) : null,
+        this.nextGoalCard(),
         e.achievements.length ? [h('div', { class: 'section' }, h('span', null, 'Achievements')), e.achievements.map((a) => h('div', { class: 'ach done' }, h('div', { class: 'mark' }, '🏆'), h('div', null, h('b', null, a.name), h('span', null, `${a.desc} +${a.tickets} tickets`))))] : null),
       h('div', { class: 'panel-foot', style: 'display:flex;flex-direction:column;gap:8px' },
         daily ? h('button', { class: 'btn wide', onclick: () => this.shareDaily(run.seed.replace('DAILY-', '')) }, 'Share result') : null,
@@ -878,6 +879,26 @@ export class App {
         daily ? null : h('button', { class: 'btn wide', id: 'btn-end-home', onclick: () => { this.ended = null; this.goTitle(); } }, 'Main menu')));
     this.ui.replaceChildren(el);
     e.achievements.length && Sfx.unlock();
+  }
+
+  /** The cheapest thing still locked in the Workshop, so the end of a run always points at the next goal. */
+  private nextGoalCard(): HTMLElement | null {
+    const m = this.meta;
+    const cands: Array<{ kind: UnlockKind; id: string; name: string }> = [
+      ...SHELL_TYPES.map((t) => ({ kind: 'shell' as UnlockKind, id: t as string, name: `${SHELLS[t].name} shell` })),
+      ...CHARMS.map((c) => ({ kind: 'charm' as UnlockKind, id: c.id, name: `${c.name} charm` })),
+      ...CRATES.map((c) => ({ kind: 'crate' as UnlockKind, id: c.id, name: `${c.name} crate` })),
+      ...SKIES.filter((s) => !s.premium).map((s) => ({ kind: 'sky' as UnlockKind, id: s.id, name: `${s.name} sky` })),
+    ].filter((c) => !isUnlocked(m, c.kind, c.id) && unlockCost(c.kind, c.id) > 0);
+    if (!cands.length) return null;
+    cands.sort((a, b) => unlockCost(a.kind, a.id) - unlockCost(b.kind, b.id));
+    const next = cands[0], cost = unlockCost(next.kind, next.id), have = m.tickets;
+    const ready = have >= cost;
+    return h('div', { class: `next-goal${ready ? ' ready' : ''}` },
+      h('span', null, ready ? 'Ready to unlock in the Workshop' : 'Next unlock'),
+      h('b', null, next.name),
+      h('div', { class: 'meter' }, h('i', { style: `width:${Math.min(100, Math.round((have / cost) * 100))}%` })),
+      h('small', null, ready ? `${fmt(cost)} 🎟 · you have ${fmt(have)}` : `${fmt(have)} / ${fmt(cost)} 🎟`));
   }
 
   // ================================================================ workshop (permanent unlocks)
